@@ -51,9 +51,14 @@ async function initializeCalendar() {
             closePopup();
             openNewAppointmentModal(info.dateStr);
         },
-        eventClick: (info) => {
-            info.jsEvent.stopPropagation();
+        eventMouseEnter: (info) => {
+            clearTimeout(window.popupCloseTimeout);
             openAppointmentPopup(info.event.extendedProps, info.jsEvent);
+        },
+        eventMouseLeave: (info) => {
+            window.popupCloseTimeout = setTimeout(() => {
+                closePopup();
+            }, 300);
         }
     });
 
@@ -71,8 +76,14 @@ async function loadUsersForSelects() {
 }
 
 function openAppointmentPopup(apt, jsEvent) {
-    _currentPopupApt = apt;
     const popup = document.getElementById('aptPopup');
+
+    if (_currentPopupApt && _currentPopupApt.appointmentId === apt.appointmentId) {
+        popup.classList.remove('hidden');
+        return;
+    }
+
+    _currentPopupApt = apt;
 
     const patient = calendarUsers.find(u => u.fiscalCode === apt.patientFiscalCode);
     const doctor = calendarUsers.find(u => u.fiscalCode === apt.doctorFiscalCode);
@@ -121,6 +132,16 @@ document.getElementById('aptPopupEditBtn').onclick = () => {
     closePopup();
     openEditAppointmentModal(_currentPopupApt);
 };
+
+const aptPopup = document.getElementById('aptPopup');
+aptPopup.addEventListener('mouseenter', () => {
+    clearTimeout(window.popupCloseTimeout);
+});
+aptPopup.addEventListener('mouseleave', () => {
+    window.popupCloseTimeout = setTimeout(() => {
+        closePopup();
+    }, 200);
+});
 
 document.addEventListener('click', (e) => {
     const popup = document.getElementById('aptPopup');

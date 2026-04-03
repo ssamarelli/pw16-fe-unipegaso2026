@@ -140,13 +140,13 @@ html, body {
     border: none !important;
     border-radius: 6px;
     padding: 4px;
-    box-shadow: none;
+    box-shadow: none !important;
+    overflow: hidden;
     transition: all 0.2s ease;
 }
 
 .fc .fc-event:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
     opacity: 0.95;
 }
 
