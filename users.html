@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>medAPP - User Registry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background:#F4F7FE;">
+    <div class="flex h-screen">
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="index.html" class="sidebar-logo" title="medAPP">M</a>
+            <a href="index.html" class="sidebar-btn" title="Home"><i class="fas fa-home text-xl"></i></a>
+            <a href="calendar.html" class="sidebar-btn" title="Calendar"><i class="fas fa-calendar-alt text-xl"></i></a>
+            <a href="users.html" class="sidebar-btn active" title="Users"><i class="fas fa-users text-xl"></i></a>
+        </nav>
+
+        <!-- Main content -->
+        <div class="flex-1 p-8 overflow-auto">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-800">User Registry</h1>
+                    <p class="text-slate-400 text-sm mt-1">Manage all patients and doctors</p>
+                </div>
+                <button id="registerUserBtn" class="btn-primary">
+                    <i class="fas fa-user-plus"></i> Register New User
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex gap-3 mb-6">
+                <input type="text" id="searchInput" placeholder="Search by name..." style="max-width:300px;">
+                <select id="roleFilter" style="max-width:180px;">
+                    <option value="all">All Roles</option>
+                    <option value="DOCTOR">Doctors</option>
+                    <option value="PATIENT">Patients</option>
+                </select>
+            </div>
+
+            <!-- Table Card -->
+            <div style="background:#fff; border-radius:20px; box-shadow:0 8px 30px rgba(0,0,0,0.05); overflow:hidden;">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Role</th>
+                            <th class="text-left">Name</th>
+                            <th class="text-left">Fiscal Code</th>
+                            <th class="text-left">Email</th>
+                            <th class="text-left">Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Selection Modal -->
+    <div id="roleModal" class="modal hidden fixed inset-0 flex items-center justify-center z-50" style="background:rgba(15,23,42,0.45);">
+        <div class="modal-box" style="max-width:380px; width:100%; text-align:center;">
+            <div style="width:56px;height:56px;background:linear-gradient(135deg,#22d3ee,#3b82f6);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:0 8px 20px rgba(59,130,246,0.3);">
+                <i class="fas fa-user-plus text-white text-xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-800 mb-2">Select Role</h2>
+            <p class="text-slate-400 text-sm mb-6">Who are you registering?</p>
+            <div class="flex gap-3">
+                <button onclick="startRegistration('DOCTOR')" class="flex-1 btn-primary" style="justify-content:center;">
+                    <i class="fas fa-stethoscope"></i> Doctor
+                </button>
+                <button onclick="startRegistration('PATIENT')" style="flex:1;background:linear-gradient(135deg,#a78bfa,#6366f1);color:white;border:none;border-radius:999px;padding:0.6rem 1rem;font-family:'Poppins',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(99,102,241,0.3);display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+                    <i class="fas fa-user"></i> Patient
+                </button>
+            </div>
+            <button class="close-modal mt-4 text-slate-400 text-sm hover:text-slate-600 transition-colors">Cancel</button>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal hidden fixed inset-0 flex items-center justify-center z-50" style="background:rgba(15,23,42,0.45);">
+        <div class="modal-box" style="max-width:640px; width:100%; max-height:90vh; overflow-y:auto;">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center mb-5">
+                <h2 id="userModalTitle" class="text-xl font-bold text-slate-800">User Details</h2>
+                <div class="flex gap-2 items-center">
+                    <button id="userEditBtn" class="hidden w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-blue-500 transition-all">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="close-modal w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div id="userTabsContainer" class="flex border-b border-slate-100 mb-5 gap-1"></div>
+
+            <!-- Tab: Personal Info -->
+            <div id="personalInfo" class="tab-content">
+                <form id="userForm" class="space-y-3">
+                    <input type="hidden" id="userRole">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="userFiscalCode" placeholder="Fiscal Code">
+                        <input type="text" id="userBirthplace" placeholder="Birthplace">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="userFirstName" placeholder="First Name">
+                        <input type="text" id="userLastName" placeholder="Last Name">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1 ml-1 font-medium">Date of Birth</label>
+                            <input type="date" id="userBirthDate">
+                        </div>
+                        <input type="email" id="userEmail" placeholder="Email" style="align-self:flex-end;">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="tel" id="userPhone" placeholder="Phone">
+                        <input type="text" id="userAddress" placeholder="Address">
+                    </div>
+                    <!-- Doctor fields -->
+                    <div id="doctorFields" class="hidden grid grid-cols-2 gap-3" style="padding-top:4px;">
+                        <input type="text" id="userSpecialization" placeholder="Specialization">
+                        <input type="text" id="userMedicalLicenseNumber" placeholder="Medical License Number">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Clinical History (Patient) -->
+            <div id="clinicalHistory" class="tab-content hidden">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Diagnosis</label>
+                        <textarea id="historyDiagnosis" rows="3" style="resize:vertical;"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Treatments</label>
+                        <textarea id="historyTreatments" rows="3" style="resize:vertical;"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Allergies</label>
+                        <textarea id="historyAllergies" rows="3" style="resize:vertical;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient: Appointments tab -->
+            <div id="patientAppointments" class="tab-content hidden">
+                <div id="patientAppointmentsList" class="space-y-2"></div>
+            </div>
+
+            <!-- Doctor: Appointments & Patients tabs -->
+            <div id="doctorAppointments" class="tab-content hidden">
+                <div id="doctorAppointmentsList" class="space-y-2"></div>
+            </div>
+            <div id="doctorPatients" class="tab-content hidden">
+                <div id="doctorPatientsList" class="space-y-2"></div>
+            </div>
+
+            <!-- Persistent footer — always visible regardless of active tab -->
+            <div id="userModalFooter" class="flex gap-3 pt-4 mt-4" style="border-top:1px solid #f1f5f9;">
+                <button type="button" id="userGlobalSaveBtn" class="btn-primary hidden flex-1" style="justify-content:center;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <button type="button" id="deleteUserBtn" class="btn-danger hidden flex-1">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+                <button type="button" class="close-modal btn-secondary flex-1">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Edit Modal (from doctor tab) -->
+    <div id="aptEditModal" class="modal hidden fixed inset-0 flex items-center justify-center z-50" style="background:rgba(15,23,42,0.45);">
+        <div class="modal-box" style="max-width:440px; width:100%;">
+            <div class="flex justify-between items-center mb-5">
+                <h2 id="aptEditModalTitle" class="text-xl font-bold text-slate-800">Edit Appointment</h2>
+                <button class="close-modal w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <input type="hidden" id="aptEditId">
+            <input type="hidden" id="aptEditPatientFc">
+            <input type="hidden" id="aptEditDoctorFc">
+
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Patient</label>
+                        <input type="text" id="aptEditPatientName" readonly style="background:#f1f5f9;color:#94a3b8;">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Doctor</label>
+                        <input type="text" id="aptEditDoctorName" readonly style="background:#f1f5f9;color:#94a3b8;">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Date</label>
+                        <input type="date" id="aptEditDate" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Time</label>
+                        <input type="time" id="aptEditTime" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Type</label>
+                    <select id="aptEditType">
+                        <option value="CONSULTATION">Consultation</option>
+                        <option value="CHECKUP">Checkup</option>
+                        <option value="SURGERY">Surgery</option>
+                        <option value="FOLLOW_UP">Follow-up</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Status</label>
+                    <select id="aptEditStatus">
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4 mt-4" style="border-top:1px solid #f1f5f9;">
+                <button type="button" id="aptEditSaveBtn" class="btn-primary flex-1" style="justify-content:center;">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button type="button" class="close-modal btn-secondary flex-1">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="users.js"></script>
+</body>
+</html>

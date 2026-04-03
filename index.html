@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>medAPP - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background:#F4F7FE;">
+    <div class="flex h-screen">
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <a href="index.html" class="sidebar-logo" title="medAPP">M</a>
+            <a href="index.html" class="sidebar-btn active" title="Home"><i class="fas fa-home text-xl"></i></a>
+            <a href="calendar.html" class="sidebar-btn" title="Calendar"><i class="fas fa-calendar-alt text-xl"></i></a>
+            <a href="users.html" class="sidebar-btn" title="Users"><i class="fas fa-users text-xl"></i></a>
+        </nav>
+
+        <!-- Main content -->
+        <div class="flex-1 flex items-center justify-center px-6">
+            <div class="w-full max-w-4xl">
+                <div class="text-center mb-14">
+                    <h1 class="text-5xl font-bold text-slate-800 mb-3">Welcome to <span style="background: linear-gradient(135deg,#22d3ee,#3b82f6); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">medAPP</span></h1>
+                    <p class="text-slate-400 text-lg font-medium">Medical Clinic Management System</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <a href="calendar.html" class="dashboard-card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #22d3ee, #3b82f6);">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">Manage Calendar</h2>
+                        <p class="text-slate-400 text-sm">View and schedule appointments</p>
+                    </a>
+                    <a href="users.html" class="dashboard-card">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #a78bfa, #6366f1);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-1">User Registry</h2>
+                        <p class="text-slate-400 text-sm">Manage patients and doctors</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
